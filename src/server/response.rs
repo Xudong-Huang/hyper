@@ -352,15 +352,16 @@ mod tests {
     #[cfg(not(all(windows, target_arch="x86", target_env="msvc")))]
     #[test]
     fn test_fresh_drop_panicing() {
-        use std::thread;
-        use std::sync::{Arc, Mutex};
+        use may::coroutine;
+        use std::sync::Arc;
+        use may::sync::Mutex;
 
         use status::StatusCode;
 
         let stream = MockStream::new();
         let stream = Arc::new(Mutex::new(stream));
         let inner_stream = stream.clone();
-        let join_handle = thread::spawn(move || {
+        let join_handle = coroutine::spawn(move || {
             let mut headers = Headers::new();
             let mut stream = inner_stream.lock().unwrap();
             let mut res = Response::new(&mut *stream, &mut headers);

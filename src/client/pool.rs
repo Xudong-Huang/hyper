@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::io::{self, Read, Write};
 use std::net::{SocketAddr, Shutdown};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use may::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use std::time::{Duration, Instant};

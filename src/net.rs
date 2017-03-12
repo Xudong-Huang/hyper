@@ -2,7 +2,8 @@
 use std::any::{Any, TypeId};
 use std::fmt;
 use std::io::{self, ErrorKind, Read, Write};
-use std::net::{SocketAddr, ToSocketAddrs, TcpStream, TcpListener, Shutdown};
+use std::net::{SocketAddr, ToSocketAddrs, Shutdown};
+use may::net::{TcpStream, TcpListener};
 use std::mem;
 use std::sync::Arc;
 
@@ -635,4 +636,3 @@ mod tests {
         assert_eq!(mock, Box::new(MockStream::new()));
     }
 }
-
