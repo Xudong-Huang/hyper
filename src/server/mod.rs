@@ -113,8 +113,6 @@ use std::net::{SocketAddr, ToSocketAddrs};
 use may::coroutine::{self, JoinHandle};
 use std::time::Duration;
 
-use num_cpus;
-
 pub use self::request::Request;
 pub use self::response::Response;
 
