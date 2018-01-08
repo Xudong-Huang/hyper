@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use may::coroutine;
 use may::sync::mpsc;
 
 use net::NetworkListener;
@@ -28,9 +27,7 @@ impl<A: NetworkListener + Send + 'static> ListenerPool<A> {
         let work = Arc::new(work);
 
         // Begin work.
-        // for _ in 0..threads {
-            spawn_with(super_tx.clone(), work.clone(), self.acceptor.clone());
-        // }
+        spawn_with(super_tx.clone(), work.clone(), self.acceptor.clone());
 
         // Monitor for panics.
         // FIXME(reem): This won't ever exit since we still have a super_tx handle.
@@ -43,14 +40,14 @@ impl<A: NetworkListener + Send + 'static> ListenerPool<A> {
 fn spawn_with<A, F>(supervisor: mpsc::Sender<()>, work: Arc<F>, mut acceptor: A)
 where A: NetworkListener + Send + 'static,
       F: Fn(<A as NetworkListener>::Stream) + Send + Sync + 'static {
-    coroutine::spawn(move || -> () {
+    go!(move || -> () {
         let _sentinel = Sentinel::new(supervisor, ());
 
         loop {
             match acceptor.accept() {
                 Ok(stream) =>  {
                     let w = work.clone();
-                    coroutine::spawn(move || w(stream));
+                    go!(move || w(stream));
                 }
                 Err(e) => {
                     info!("Connection failed: {}", e);

@@ -128,7 +128,7 @@
 //! implement `Reader` and can be read to get the data out of a `Response`.
 //!
 
-extern crate may;
+#[macro_use] extern crate may;
 extern crate base64;
 extern crate time;
 #[macro_use] extern crate url;

@@ -110,7 +110,7 @@
 use std::fmt;
 use std::io::{self, ErrorKind, BufWriter, Write};
 use std::net::{SocketAddr, ToSocketAddrs};
-use may::coroutine::{self, JoinHandle};
+use may::coroutine::JoinHandle;
 use std::time::Duration;
 
 pub use self::request::Request;
@@ -219,8 +219,7 @@ impl<S: SslServer + Clone + Send> Server<HttpsListener<S>> {
 impl<L: NetworkListener + Send + 'static> Server<L> {
     /// Binds to a socket and starts handling connections.
     pub fn handle<H: Handler + 'static>(self, handler: H) -> ::Result<Listening> {
-        // start in 1000 coroutines here
-        self.handle_threads(handler, 1000)
+        self.handle_threads(handler, 1)
     }
 
     /// Binds to a socket and starts handling connections with the provided
@@ -240,7 +239,7 @@ where H: Handler + 'static, L: NetworkListener + Send + 'static {
     let worker = Worker::new(handler, server.timeouts);
     let work = move |mut stream| worker.handle_connection(&mut stream);
 
-    let guard = coroutine::spawn(move || pool.accept(work, threads));
+    let guard = go!(move || pool.accept(work, threads));
 
     Ok(Listening {
         _guard: Some(guard),
